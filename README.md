@@ -1,0 +1,71 @@
+# Minecraft Fabric 1.21.11 One-EXE Launcher
+
+Лаунчер на Go для запуска **Fabric сервера 1.21.11** одним `.exe`.
+
+## Что делает
+
+При запуске `mc-server-launcher.exe`:
+
+- создаёт/читает `launcher.json`;
+- выделяет серверу **5 ГБ RAM** (`-Xms5G -Xmx5G` по умолчанию);
+- создаёт папку `mc_server` и `mc_server/mods`;
+- скачивает Fabric server launcher jar (если его ещё нет);
+- записывает `eula=true`;
+- создаёт `SERVER_IP.txt` с IP `212.0.213.86`;
+- запускает сервер командой `java -jar fabric-server-launch.jar nogui`.
+
+## Как собрать .exe
+
+```powershell
+set GOOS=windows
+set GOARCH=amd64
+go build -o mc-server-launcher.exe .
+```
+
+## Как сделать один архив для себя и друзей
+
+1. Соберите `mc-server-launcher.exe`.
+2. Создайте папку, например `minecraft-fabric-server`.
+3. Положите в неё:
+   - `mc-server-launcher.exe`
+   - `launcher.json` (опционально, создастся автоматически)
+   - `SERVER_IP.txt` (опционально, создастся автоматически)
+   - `README.md`
+4. Запакуйте папку в `.zip` и отправьте архив.
+5. После распаковки запускайте **только** `mc-server-launcher.exe`.
+
+## Конфиг `launcher.json`
+
+```json
+{
+  "minecraft_version": "1.21.11",
+  "min_ram": "5G",
+  "max_ram": "5G",
+  "server_dir": "mc_server",
+  "jar_name": "fabric-server-launch.jar",
+  "server_url": "",
+  "server_ip": "212.0.213.86"
+}
+```
+
+- `minecraft_version` — версия Minecraft (по умолчанию `1.21.11`).
+- `min_ram`, `max_ram` — память JVM.
+- `server_dir` — папка сервера.
+- `jar_name` — имя Fabric server launcher jar.
+- `server_url` — прямой URL для jar (если нужен ручной контроль).
+- `server_ip` — IP, который записывается в `SERVER_IP.txt`.
+
+## Добавление модов
+
+Просто кидайте `.jar` модов в папку:
+
+```text
+mc_server/mods
+```
+
+Можно добавлять моды в любой момент (обычно лучше на остановленном сервере).
+
+## Важно
+
+- Нужна Java 21+ в `PATH`.
+- Для входа друзей откройте порт `25565` на роутере (port forwarding) на ваш ПК.
