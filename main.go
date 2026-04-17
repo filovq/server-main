@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 type Config struct {
@@ -39,7 +40,7 @@ func main() {
 	}
 
 	if created {
-		fmt.Println("Создан launcher.json (Fabric 1.21.11, 5GB RAM). При необходимости измените параметры.")
+		fmt.Println("Создан launcher.json (Fabric 1.20.4, RAM 4G-6G). При необходимости измените параметры.")
 	}
 
 	if err := os.MkdirAll(cfg.ServerDir, 0o755); err != nil {
@@ -66,6 +67,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	if err := ensureServerProperties(cfg.ServerDir, 6); err != nil {
+		fmt.Println("Не удалось обновить server.properties:", err)
+		os.Exit(1)
+	}
+
 	if err := writeServerIPFile("SERVER_IP.txt", cfg.ServerIP); err != nil {
 		fmt.Println("Не удалось создать SERVER_IP.txt:", err)
 		os.Exit(1)
@@ -79,9 +85,9 @@ func main() {
 
 func loadOrCreateConfig(path string) (Config, bool, error) {
 	defaults := Config{
-		MinecraftVersion: "1.21.11",
-		MinRAM:           "5G",
-		MaxRAM:           "5G",
+		MinecraftVersion: "1.20.4",
+		MinRAM:           "4G",
+		MaxRAM:           "6G",
 		ServerDir:        "mc_server",
 		JarName:          "fabric-server-launch.jar",
 		ServerURL:        "",
@@ -139,6 +145,51 @@ func ensureEULA(serverDir string) error {
 func writeServerIPFile(path, ip string) error {
 	content := fmt.Sprintf("IP сервера: %s\nПорт по умолчанию: 25565\n", ip)
 	return os.WriteFile(path, []byte(content), 0o644)
+}
+
+func ensureServerProperties(serverDir string, chunkDistance int) error {
+	propsPath := filepath.Join(serverDir, "server.properties")
+	view := fmt.Sprintf("view-distance=%d", chunkDistance)
+	sim := fmt.Sprintf("simulation-distance=%d", chunkDistance)
+
+	if _, err := os.Stat(propsPath); errors.Is(err, os.ErrNotExist) {
+		content := fmt.Sprintf("view-distance=%d\nsimulation-distance=%d\n", chunkDistance, chunkDistance)
+		return os.WriteFile(propsPath, []byte(content), 0o644)
+	}
+
+	data, err := os.ReadFile(propsPath)
+	if err != nil {
+		return err
+	}
+
+	lines := strings.Split(string(data), "\n")
+	hasView := false
+	hasSim := false
+
+	for i, line := range lines {
+		if strings.HasPrefix(line, "view-distance=") {
+			lines[i] = view
+			hasView = true
+		}
+		if strings.HasPrefix(line, "simulation-distance=") {
+			lines[i] = sim
+			hasSim = true
+		}
+	}
+
+	if !hasView {
+		lines = append(lines, view)
+	}
+	if !hasSim {
+		lines = append(lines, sim)
+	}
+
+	updated := strings.Join(lines, "\n")
+	if !strings.HasSuffix(updated, "\n") {
+		updated += "\n"
+	}
+
+	return os.WriteFile(propsPath, []byte(updated), 0o644)
 }
 
 func downloadServerJar(cfg Config, jarPath string) error {

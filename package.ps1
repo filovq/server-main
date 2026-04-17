@@ -18,9 +18,9 @@ if (Test-Path launcher.json) {
 else {
 @'
 {
-  "minecraft_version": "1.21.11",
-  "min_ram": "5G",
-  "max_ram": "5G",
+  "minecraft_version": "1.20.4",
+  "min_ram": "4G",
+  "max_ram": "6G",
   "server_dir": "mc_server",
   "jar_name": "fabric-server-launch.jar",
   "server_url": "",

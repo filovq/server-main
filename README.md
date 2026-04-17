@@ -1,18 +1,19 @@
-# Minecraft Fabric 1.21.11 One-EXE Launcher
+# Minecraft Fabric 1.20.4 One-EXE Launcher
 
-Лаунчер на Go для запуска **Fabric сервера 1.21.11** одним `.exe`.
+Лаунчер на Go для запуска **Fabric сервера 1.20.4** одним `.exe`.
 
 ## Что делает
 
 При запуске `mc-server-launcher.exe`:
 
 - создаёт/читает `launcher.json`;
-- выделяет серверу **5 ГБ RAM** (`-Xms5G -Xmx5G` по умолчанию);
+- выделяет серверу **RAM 4-6 ГБ** (`-Xms4G -Xmx6G` по умолчанию);
 - создаёт папку `mc_server` и `mc_server/mods`;
 - скачивает Fabric server launcher jar (если его ещё нет);
 - записывает `eula=true`;
 - создаёт `SERVER_IP.txt` с IP `212.0.213.86`;
-- запускает сервер командой `java -jar fabric-server-launch.jar nogui`.
+- запускает сервер командой `java -jar fabric-server-launch.jar nogui`;
+- выставляет прогрузку чанков в `server.properties`: `view-distance=6` и `simulation-distance=6`.
 
 ## Как собрать .exe
 
@@ -38,9 +39,9 @@ go build -o mc-server-launcher.exe .
 
 ```json
 {
-  "minecraft_version": "1.21.11",
-  "min_ram": "5G",
-  "max_ram": "5G",
+  "minecraft_version": "1.20.4",
+  "min_ram": "4G",
+  "max_ram": "6G",
   "server_dir": "mc_server",
   "jar_name": "fabric-server-launch.jar",
   "server_url": "",
@@ -48,8 +49,8 @@ go build -o mc-server-launcher.exe .
 }
 ```
 
-- `minecraft_version` — версия Minecraft (по умолчанию `1.21.11`).
-- `min_ram`, `max_ram` — память JVM.
+- `minecraft_version` — версия Minecraft (по умолчанию `1.20.4`).
+- `min_ram`, `max_ram` — память JVM (по умолчанию от 4 ГБ до 6 ГБ).
 - `server_dir` — папка сервера.
 - `jar_name` — имя Fabric server launcher jar.
 - `server_url` — прямой URL для jar (если нужен ручной контроль).
