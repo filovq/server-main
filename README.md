@@ -35,6 +35,26 @@ go build -o mc-server-launcher.exe .
 4. Запакуйте папку в `.zip` и отправьте архив.
 5. После распаковки запускайте **только** `mc-server-launcher.exe`.
 
+
+## Готовый архив одной командой
+
+Скрипт `package.ps1` собирает `mc-server-launcher.exe` и формирует архив `dist/minecraft-fabric-server.zip`, куда уже входят:
+
+- `mc-server-launcher.exe`;
+- `launcher.json`;
+- `SERVER_IP.txt`;
+- `README.md`;
+- `mc_server/fabric-server-launch.jar` (Fabric 1.20.4 server core);
+- `mc_server/eula.txt`;
+- `mc_server/server.properties` с дистанцией чанков 6;
+- `mc_server/mods` для ваших модов.
+
+Запуск:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\package.ps1
+```
+
 ## Конфиг `launcher.json`
 
 ```json
